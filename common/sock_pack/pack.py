@@ -2,6 +2,7 @@
 
 # 对消息进行打包，功能是构建数据的body,并不是一条完整的数据(缺少header)
 
+
 import log
 import header
 
@@ -81,6 +82,8 @@ class Unpack():
 
     def get_header_reserve(self):
         return self[18:22]
+
+
 
 
 

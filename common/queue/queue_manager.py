@@ -1,28 +1,19 @@
-try:
-    import Queue           # python2
-except ImportError:
-    import queue as Queue  # python3
+# coding=utf-8
+import myQueue
+import log
 
-class Queue_manager():
+"""作为队列管理者，创建队列和对外提供队列索引"""
 
-    my_queue = []
+class QueueManager():
 
-    def __init__(self, queue_num, queue_size):
-        for i in queue_num:
-            self.my_queue[i] = Queue.Queue(queue_size)
+    myQueues =[]
 
-    def get_queue(self, index = 0):
-        return self.my_queue[0] if index > len(self.my_queue) -1 else self.my_queue[index]
+    def __init__(self, queueNum, queueSize):
+        for i in range(0, queueNum):
+            self.myQueues.append(myQueue.MyQueue(i, queueSize))
 
-    def push(self, data_class, index=0):
-        if index > len(self.my_queue) - 1:
-            self.my_queue[0].put(data_class)
-        else:
-            self.my_queue[index].put(data_class)
+    def getQueue(self, index=0):
+        return self.myQueues[0] if index > len(self.myQueues) - 1 else self.myQueues[index]
 
-    def pop(self, index=0):
-        if index > len(self.my_queue) - 1:
-            self.my_queue[0].get()
-        else:
-            self.my_queue[index].get()
+
 
