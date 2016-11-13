@@ -2,6 +2,21 @@
 
 class TaskBase():
 
-    """需要被重写的函数,处理任务的线程默认调用该执行函数"""
-    def proc(self):
-        pass
+    uri = 0
+
+    def setUri(self, uri):
+        self.uri = uri
+    def getUri(self):
+        return self.uri
+
+    def setProcFunc(self, callBackFunc):
+        self.procFunc = callBackFunc
+
+    def getProcFunc(self):
+        return self.procFunc
+
+    def setContext(self, data):
+        self.data = data
+
+    def getContext(self):
+        return self.data

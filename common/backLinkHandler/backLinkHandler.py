@@ -6,12 +6,16 @@ import log
 import send_data as sendData
 import common.sock_pack.pack as pack
 import common.queue.taskQueue as taskQueue
-
+import common.appContext.appContext as appContext
+import common.task.taskbase as taskBase
+import common.thread.threadpool as threadpool
+import thread
 """当主线程接收到数据的时候，将数据发给backLinkHandler"""
 
 class BackLinkHandler(socketserver.BaseRequestHandler):
 
     def handle(self):
+        print  thread.get_ident()
         mySock = MySock.MySock()
         data = mySock.mySockRead(self.request)
         log.info(data)
@@ -27,13 +31,16 @@ class BackLinkHandler(socketserver.BaseRequestHandler):
                 pos = dataLength + 22
                 oneFullData = data[0:pos]                   # 获取一个完整的包
                 # 然后还得找到对应的处理函数，一起封装好才能送入队列，这样子子线程就能直接处理
-                taskQueue.TaskQueue(1, 10).getQueue(0).push(oneFullData)   # 将完整的消息报送入任务队列0
+                procFunc = appContext.AppContext().getEntryByUri(uri)
+                if procFunc != 0:
+                    task = taskBase.TaskBase()
+                    task.setUri(uri)
+                    task.setProcFunc(procFunc)
+                    task.setContext(oneFullData)
+                    taskQueue.TaskQueue().getQueue(0).push(task)   # 将完整的消息报送入任务队列0
             else:
-                log.info("数据不完成，果断退出")
+                log.info("数据不完整，果断退出")
                 break
-
-        log.info(taskQueue.TaskQueue(1,10).getQueue(0).pop())
-
 
 
 
@@ -46,7 +53,27 @@ class MyTCPServer(socketserver.TCPServer):
         self.socket.bind(self.server_address)
         self.server_address = self.socket.getsockname()
 
-HOST, PORT = "localhost", 9999
 
+def print_(context):
+    log.info(context + "厉害")
+
+
+def procQueue(context):
+    while True:
+        print  thread.get_ident()
+        task = taskQueue.TaskQueue().getQueue(0).pop()
+        task.getProcFunc()("牛逼")
+        log.info("看看是否会阻塞")
+
+
+
+HOST, PORT = "localhost", 9999
 server = MyTCPServer((HOST, PORT), BackLinkHandler)
+appContext.AppContext().addEntry(10, print_)
+taskQueue.TaskQueue(2, 10)
+argList = {1, 1}
+pool = threadpool.ThreadPool(2)
+# server_login不需要参数，所以给了10个没有意义的参数
+requests = threadpool.makeRequests(procQueue, argList)
+[pool.putRequest(req) for req in requests]
 server.serve_forever()
