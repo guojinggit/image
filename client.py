@@ -1,4 +1,5 @@
 import socket
+import time
 import sys
 
 HOST, PORT = "localhost", 8444
@@ -11,7 +12,11 @@ sock.connect((HOST, PORT))
 while True:
     # data = sys.stdin.readline()
 
-    # sock.send(data)
+    time.sleep(2)
+    sock.send(data)
+    while True:
+        sock.send(data)
+        time.sleep(2)
     break
     # Receive data from the server and shut down
     received = str(sock.recv(1024), "utf-8")

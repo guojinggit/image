@@ -1,6 +1,6 @@
 from common.epoll.epoll import *
 from common.sock_connect.connect import *
-
+from common.backLinkHandler.backLinkHandler import *
 
 class Framework(Singleton):
 
@@ -9,7 +9,8 @@ class Framework(Singleton):
 
     def init(self):
         self.epoll = EpollServer()
-        self.tcpserver = TcpServer(('', 8444), Conn)
+        self.backLinkHandler = BackLinkHandler()
+        self.tcpserver = TcpServer(('', 8444), Conn, self.backLinkHandler)
         self.epoll.register_with_handler(self.tcpserver)
 
     def start(self):

@@ -68,13 +68,14 @@ class TcpServer(Handler):
 
     maxnum = 20
     t = {}
-    def __init__(self, ip_and_port, ConnClass):
+
+    def __init__(self, ip_and_port, ConnClass, backLinHandler):
         self.ConnClass = ConnClass
+        self.backLinHandler = backLinHandler
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind(ip_and_port)
         self.sock.listen(self.maxnum)
-
 
     def handle(self, fd, event):
         if event & select.EPOLLIN:
@@ -82,7 +83,7 @@ class TcpServer(Handler):
             self.on_accept(fd, address)
 
     def on_accept(self, fd, address):
-        self.ConnClass(fd, address)
+        self.ConnClass(fd, address, self.backLinHandler)
 
     def getfd(self):
         return self.sock.fileno()

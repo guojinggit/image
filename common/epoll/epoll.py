@@ -18,7 +18,6 @@ class EpollServer(Singleton):
         self.epoll = select.epoll()
         self.shutdown_request = False
 
-
     def server_forever(self):  # 需要主动调用。当此方法运行，epoll服务器正式运行
         try:
             while not self.shutdown_request:
