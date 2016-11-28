@@ -2,7 +2,7 @@
 
 import select
 
-import log
+
 
 class EpollServer():
 
@@ -15,4 +15,3 @@ class EpollServer():
             while not self.__shutdown_request:
                 events = self.epoll.poll(self.timeout)
         finally:
-            log.info("epoll")

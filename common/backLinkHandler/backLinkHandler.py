@@ -13,12 +13,10 @@ import thread
 import common.queue.sendQueue as sendQueue
 """当主线程接收到数据的时候，将数据发给backLinkHandler"""
 
-class BackLinkHandler(socketserver.BaseRequestHandler):
 
-    def handle(self):
-        mySock = MySock.MySock()
-        data = mySock.mySockRead(self.request)
-        log.info(data)
+class BackLinkHandler():
+
+    def handle(self, data, datasize):
         pos = 0
        # 整理数据,主要是处理遇到粘包的情况，然后发给任务队列去处理
         while True:
@@ -64,7 +62,7 @@ def procTaskQueue(context):
         log.info("当前处理现场id号：" + str(thread.get_ident()))
         task.getProcFunc()("牛逼")
         sendQueue.SendQueue().getQueue().push("hello")
-        log.info(sendQueue.SendQueue().getQueue().)
+        log.info(sendQueue.SendQueue().getQueue().pop())
         log.info("测试")
 
 def procSendQueue(context):
@@ -73,8 +71,8 @@ def procSendQueue(context):
         sendTask = sendQueue.SendQueue().getQueue().pop()
         log.info(sendTask)
 
-HOST, PORT = "localhost", 9999
-server = MyTCPServer((HOST, PORT), BackLinkHandler)
+# HOST, PORT = "localhost", 9999
+# server = MyTCPServer((HOST, PORT), BackLinkHandler)
 appContext.AppContext().addEntry(10, print_)
 taskQueue.TaskQueue(2, 10)
 sendQueue.SendQueue(2, 10)
@@ -82,9 +80,9 @@ argList = [1,1]
 poolTask = threadpool.ThreadPool(2)
 requestsTask = threadpool.makeRequests(procTaskQueue, argList)
 [poolTask.putRequest(req) for req in requestsTask]
-
-poolSendTask = threadpool.ThreadPool(1)
-requestsSendTask = threadpool.makeRequests(procSendQueue, argList)
-[poolSendTask.putRequest(req) for req in requestsSendTask]
-
-server.serve_forever()
+#
+# poolSendTask = threadpool.ThreadPool(1)
+# requestsSendTask = threadpool.makeRequests(procSendQueue, argList)
+# [poolSendTask.putRequest(req) for req in requestsSendTask]
+#
+# server.serve_forever()
