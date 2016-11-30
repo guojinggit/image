@@ -1,17 +1,21 @@
 # coding=utf-8
 import log
-import queue_manager
-import common.singleton.singleton as singleton
+from common.queue.queue_manager import *
+from common.singleton.singleton import *
 """发送消息的队列"""
 
-class SendQueue(singleton.Singleton, queue_manager.QueueManager):
 
-   def __init__(self, queueNum=0, queueSize=0):
-       queue_manager.QueueManager.__init__(self,queueNum,queueSize)
-       print "init sendqueue"
+class SendQueue(Singleton, QueueManager):
 
-queue = SendQueue(10, 10)
-queue.getQueue().push("good")
-queue2 = SendQueue(0,0)
-print queue
-print queue2
+    isInit = False
+
+    def __init__(self, queueNum=0, queueSize=0):
+       if not self.isInit:
+            QueueManager.__init__(self, queueNum, queueSize)
+            self.isInit = True
+
+
+
+
+
+

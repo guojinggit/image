@@ -15,8 +15,14 @@ class TaskBase():
     def getProcFunc(self):
         return self.procFunc
 
-    def setContext(self, data):
+    def setMessage(self, data):
         self.data = data
 
-    def getContext(self):
+    def getMessage(self):
         return self.data
+
+    def setConn(self, conn):
+        self.conn = conn
+
+    def getConn(self):
+        return self.conn

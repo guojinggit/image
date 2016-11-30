@@ -59,7 +59,6 @@ class Unpack():
     num_data_length = 8
     pos = 22
 
-
     def load(self, data_class):
         data_class.unpack_me(self)
 

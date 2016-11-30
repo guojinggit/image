@@ -14,8 +14,10 @@ while True:
 
     time.sleep(2)
     sock.send(data)
+    print sock.recv(1024)
     while True:
         sock.send(data)
+        print sock.recv(1024)
         time.sleep(2)
     break
     # Receive data from the server and shut down

@@ -2,29 +2,37 @@
 
 import select
 import socket
-from common.singleton.singleton import Singleton
+from common.singleton.singleton import *
+from common.queue.taskQueue import *
+from common.queue.sendQueue import *
+from common.task.taskbase import *
 
 """
 	按照解耦的设计思想
 	EpollServer只提供注册信号接口，当信号触发后，主动调用注册对象的handle的方法，EpollServer使命完成，周而复始
 """
 
+
 class EpollServer(Singleton):
 
-    timeout = 1
-    fd_map_handler={}
+    isInit = False
 
     def __init__(self):
-        self.epoll = select.epoll()
-        self.shutdown_request = False
+        if not self.isInit:
+            self.timeout = 0.5
+            self.fd_map_handler = {}
+            self.epoll = select.epoll()
+            self.shutdown_request = False
+            self.isInit = True
 
     def server_forever(self):  # 需要主动调用。当此方法运行，epoll服务器正式运行
         try:
             while not self.shutdown_request:
-                events = self.epoll.poll()
+                events = self.epoll.poll(self.timeout)
                 for fd, event in events:
                     print fd, event
                     self.handle_request_noblock(fd, event)
+                self.send_msg()
         finally:
             self.shutdown_request = False
 
@@ -40,6 +48,23 @@ class EpollServer(Singleton):
         # 本来在c++里是可以直接传event.data.ptr,这样就能直接回调，
         # 但是python不提供这个接口，所以自己建立一张表映射fd和handler
         self.fd_map_handler[handler.getfd()] = handler
+
+    def modify_with_hanler(self, handler, eventmask):
+        self.epoll.modify(handler.getfd(), eventmask)
+
+    def unregister_with_handler(self, handler):
+        try:
+            self.epoll.unregister(handler.getfd())
+            self.fd_map_handler.pop(handler.getfd())
+        except IOError:
+            print "IOERROR"
+
+
+    def send_msg(self):
+        while SendQueue().getQueue(0).size() > 0:
+            task = SendQueue().getQueue(0).pop()
+            conn = task.getConn()
+            conn.sendbin(task.getMessage())
 
 
 class Handler:  # 需要被继承类，该类相当于一个规则，凡是想注册到epoll里去的类，都必须实现下面两个方法
