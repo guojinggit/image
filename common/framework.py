@@ -47,7 +47,7 @@ class Framework(Singleton):
         self.sendQueue = SendQueue(1, 1000)
 
         # start threadpoll
-        argList = [1, 1]
+        argList = [1]
         poolTask = threadpool.ThreadPool(2)
         requestsTask = threadpool.makeRequests(procTaskQueue, argList)
         [poolTask.putRequest(req) for req in requestsTask]
@@ -56,6 +56,4 @@ class Framework(Singleton):
         self.epoll.server_forever()
 
 
-framework = Framework()
-Entry().bind_uri(AppContext(), TestMessage(), print_)
-framework.start()
+

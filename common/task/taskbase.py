@@ -4,6 +4,8 @@ class TaskBase():
 
     uri = 0
 
+
+
     def setUri(self, uri):
         self.uri = uri
     def getUri(self):

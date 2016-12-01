@@ -18,6 +18,7 @@ class Pack(header.Header):
         """必须主动调用的方法，顺便将自己的对象传过去"""
         data_class.pack_me(self)
         self.set_body_length(len(self.body))
+        self.set_uri(data_class.get_uri())
 
     def pack(self, data):
         """打包动作，在数据类内部调用"""
