@@ -1,4 +1,6 @@
 # coding=utf-8
+import sys
+sys.path.append("..")
 
 from common.epoll.epoll import *
 from common.sock_connect.connect import *
@@ -9,6 +11,8 @@ from common.protocol.tespprotocol import *
 from common.task.taskbase import *
 from common.queue.sendQueue import *
 from common.queue.taskQueue import *
+from common.config.config import *
+from common.mysql.mysql import *
 
 def procTaskQueue(context):
     while True:
@@ -37,18 +41,48 @@ class Framework(Singleton):
         self.init()
 
     def init(self):
+
+        # init config
+        self.config = Config()
+        self.config.read("common/config/framework.conf")
+
+        #init mysql
+        self.mysql = Mysql()
+        mysqlIp = self.config.get("mysql", "ip")
+        mysqlPort = self.config.getInt("mysql", "port")
+        mysqlUser = self.config.get("mysql", "user")
+        mysqlPwd = self.config.get("mysql", "passwd")
+
+        self.mysql.init(mysqlIp, mysqlPort, mysqlUser, mysqlPwd)
+
+        # init epoll
         self.epoll = EpollServer()
+
+        # init backlinkhandler
         self.backLinkHandler = BackLinkHandler()
-        self.tcpserver = TcpServer(('', 8444), Conn, self.backLinkHandler)
+
+        # init tcpserver
+        IP = self.config.get("tcpserver", "ip")
+        PORT = self.config.getInt("tcpserver","port")
+        self.tcpserver = TcpServer((IP, PORT), Conn, self.backLinkHandler)
         self.epoll.register_with_handler(self.tcpserver)
 
-        # init queue
-        self.taskQueue = TaskQueue(1, 1000)
-        self.sendQueue = SendQueue(1, 1000)
+        # init taskqueue
+        queuenum = self.config.getInt("taskqueue", "queuenum")
+        queueMaxSize = self.config.getInt("taskqueue", "queueMaxSize")
+        self.taskQueue = TaskQueue(queuenum, queueMaxSize)
 
-        # start threadpoll
-        argList = [1]
-        poolTask = threadpool.ThreadPool(2)
+        # init sendqueue
+        queuenum = self.config.getInt("sendqueue", "queuenum")
+        queueMaxSize = self.config.getInt("sendqueue", "queueMaxSize")
+        self.sendQueue = SendQueue(queuenum, queueMaxSize)
+
+        # start threadpool
+        theadnum = self.config.getInt("theadpool", "theadnum")
+        argList=[]
+        for i in range(0, theadnum):
+            argList.append(i+1)
+        poolTask = threadpool.ThreadPool(theadnum)
         requestsTask = threadpool.makeRequests(procTaskQueue, argList)
         [poolTask.putRequest(req) for req in requestsTask]
 

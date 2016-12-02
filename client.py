@@ -2,7 +2,8 @@ import socket
 import time
 import sys
 
-HOST, PORT = "localhost", 8444
+#HOST, PORT = "localhost", 8444
+HOST, PORT = "120.26.164.219", 8444
 data ="000000331000000000000000000002xx00000004good00000003123"
 registerx = "000000742000000000000000000008register00000004test00000009127.0.0.100000004888400000001x00000000"
 registery = "000000742000000000000000000008register00000004test00000009127.0.0.100000004888400000001y00000000"
@@ -15,7 +16,7 @@ sock.connect((HOST, PORT))
 while True:
     # data = sys.stdin.readline()
 
-    time.sleep(2)
+    # time.sleep(2)
     # sock.send(register)
     # print sock.recv(1024)
     while True:
