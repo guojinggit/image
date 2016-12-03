@@ -45,7 +45,7 @@ class Conn(Socket, Handler):
         self.set_sock(fd)
         self.address = address
         self.backLinkHander = backLinkHander
-        EpollServer().register_with_handler(self)
+        Epoll().register_with_handler(self)
 
     def sendbin(self, data):
         self.write(data)
@@ -66,7 +66,7 @@ class Conn(Socket, Handler):
                 self.close()
 
     def close(self):
-        EpollServer().unregister_with_handler(self)
+        Epoll.unregister_with_handler(self)
 
 
 class Tcpsock:
@@ -75,13 +75,15 @@ class Tcpsock:
 
 class TcpServer(Handler):
 
-    def __init__(self, ip_and_port, ConnClass, backLinHandler):
+    def __init__(self, config, conn, backLinHandler):
+        ip = config.get("tcpserver", "ip")
+        port = config.getint("tcpserver", "port")
         self.maxnum = 1024
-        self.ConnClass = ConnClass
+        self.ConnClass = conn
         self.backLinHandler = backLinHandler
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.bind(ip_and_port)
+        self.sock.bind((ip, port))
         self.sock.listen(self.maxnum)
 
     def handle(self, fd, event):

@@ -39,6 +39,7 @@ class BackLinkHandler():
                     task.setMessage(entry.messageClass)
                     task.setConn(conn)
                     taskQueue.TaskQueue().getQueue(0).push(task)   # 将完整的消息报送入任务队列0
+
             else:
                 log.info("数据不完整，果断退出")
                 break

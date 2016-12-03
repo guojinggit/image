@@ -10,8 +10,13 @@ class TaskQueue(Singleton, QueueManager):
     """使用单例，保证send_queue这个对象只有一个，但是里面可以有很多队列"""
     isInit = False
 
-    def __init__(self, queueNum=0, queueSize=0):
+    def __init__(self, config=0):
         if not self.isInit:
-            QueueManager.__init__(self, queueNum, queueSize)
+            queuenum = config.getint("taskqueue", "queuenum")
+            queueMaxSize = config.getint("taskqueue", "queueMaxSize")
+            QueueManager.__init__(self, queuenum, queueMaxSize)
             self.isInit = True
+
+
+
 

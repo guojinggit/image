@@ -2,12 +2,16 @@ import log
 from common.task.taskbase import *
 from common.protocol.commonprotocol import *
 from common.queue.sendQueue import *
+from common.thread.threads import *
+from common.env.env import *
 
 class Register():
 
     daemon_reg_edit = {}
 
     def on_register_msg(self, msg, conn):
+        local = Env.getThreadLocal()
+        print local.test
         reqtype = msg.reqtype
         dmsg = self.dmsg_from_msg(msg)
         if reqtype == "register":

@@ -9,9 +9,11 @@ class SendQueue(Singleton, QueueManager):
 
     isInit = False
 
-    def __init__(self, queueNum=0, queueSize=0):
-       if not self.isInit:
-            QueueManager.__init__(self, queueNum, queueSize)
+    def __init__(self, config=0):
+        if not self.isInit:
+            queuenum = config.getint("sendqueue", "queuenum")
+            queuemaxsize = config.getint("sendqueue", "queueMaxSize")
+            QueueManager.__init__(self, queuenum, queuemaxsize)
             self.isInit = True
 
 

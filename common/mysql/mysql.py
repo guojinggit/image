@@ -5,18 +5,14 @@ class Mysql:
 
     db_map_conn = {}
 
-    def init(self, host, port, user, passwd):
-        self.host = host
-        self.port = port
-        self.user = user
-        self.passwd = passwd
+    def __init__(self, config):
+        self.mysqlIp = config.get("mysql", "ip")
+        self.mysqlPort = config.getint("mysql", "port")
+        self.mysqlUser = config.get("mysql", "user")
+        self.mysqlPwd = config.get("mysql", "passwd")
 
 
     def connect(self, db):
-        print self.host
-        print self.port
-        print self.user
-        print self.passwd
         conn = MySQLdb.connect(
             host=self.host,
             port=self.port,

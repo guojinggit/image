@@ -13,7 +13,7 @@ from common.task.taskbase import *
 """
 
 
-class EpollServer(Singleton):
+class Epoll(Singleton):
 
     isInit = False
 

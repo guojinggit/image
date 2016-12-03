@@ -1,11 +1,8 @@
-from common.framework import *
-from common.protocol.commonprotocol import *
+from common.framework.framework import *
 from src.register import *
 
 if __name__ == "__main__":
-    framework = Framework()
+    framework = Framework_AN94
     Entry().bind_uri(AppContext(), DaemonReq(), Register().on_register_msg)
-
-
     framework.start()
 

@@ -4,32 +4,18 @@ import ConfigParser
 from common.singleton.singleton import *
 
 
-class Config(Singleton):
+class Config():
+
+    def init(self):
+        return self.openpath("framework.conf")
 
     def read(self, path):
         self.config = ConfigParser.ConfigParser()
-        self.config.read(path)
+        return self.config.read(path)
 
-    def sections(self):
-        return self.config.sections()
-
-    def options(self, name):
-        return self.config.options(name)
-
-    def items(self, name):
-        return self.config.items(name)
-
-    def get(self, section, option):
-        return self.config.get(section, option)
-
-    def getInt(self, section, option):
-        return self.config.getint(section, option)
-
-    def getfloat(self, section, option):
-        return self.config.getfloat(section, option)
-
-    def getboolean(self, section, option):
-        return self.config.getboolean(section, option)
+    def openpath(self, path):
+        self.read(path)
+        return self.config
 
 
 
