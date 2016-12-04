@@ -18,6 +18,9 @@ class Socket:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
+    def connect(self, ip_port):
+        return self.sock.connect(ip_port)
+
     def listen(self, maxnum):
         self.sock.listen(maxnum)
 
@@ -41,11 +44,6 @@ class Socket:
 
 class Conn(Socket, Handler):
 
-    def __init__(self, fd, address, backLinkHander):
-        self.set_sock(fd)
-        self.address = address
-        self.backLinkHander = backLinkHander
-        Epoll().register_with_handler(self)
 
     def sendbin(self, data):
         self.write(data)
@@ -65,12 +63,31 @@ class Conn(Socket, Handler):
             except socket.error:
                 self.close()
 
+    # def connect(self,(ip, port)):
+
+
     def close(self):
-        Epoll.unregister_with_handler(self)
+        Epoll().unregister_with_handler(self)
 
 
 class Tcpsock:
     pass
+
+class ServerConn(Conn):
+
+    def __init__(self, fd, address, backLinkHander):
+        self.set_sock(fd)
+        self.address = address
+        self.backLinkHander = backLinkHander
+        Epoll().register_with_handler(self)
+
+class ClientConn(Conn):
+
+    def __init__(self, ip_port, backLinkHander):
+        self.sock = self.connect(ip_port)
+        self.backLinkHander = backLinkHander
+        Epoll().register_with_handler(self)
+
 
 
 class TcpServer(Handler):

@@ -9,8 +9,8 @@ class AppContext(Singleton):
     uriMapFunc = {}
 
     """绑定函数,函数同一为一个参数"""
-    def addEntry(self, uri, entry):
-        self.uriMapFunc[uri] = entry  # 将uri和对应的处理函数插入字典
+    def addEntry(self, entry):
+        self.uriMapFunc[entry.uri] = entry  # 将uri和对应的处理函数插入字典
 
     def getEntryByUri(self, uri):
         if uri in self.uriMapFunc.keys():
@@ -21,11 +21,12 @@ class AppContext(Singleton):
 
 class Entry():
 
-    def bind_uri(self, appContext, messageClass, callBackFunc):
+    def bind_uri(self, messageClass, callBackFunc):
         self.uri = messageClass.get_uri()
         self.messageClass = messageClass
         self.callBackFunc = callBackFunc
-        appContext.addEntry(self.uri, self)
+        return self
+
 
     def handle_unpack(self, context, len):
         upk = Unpack(context, len)

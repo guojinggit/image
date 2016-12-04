@@ -59,7 +59,6 @@ class Epoll(Singleton):
         except IOError:
             print "IOERROR"
 
-
     def send_msg(self):
         while SendQueue().getQueue(0).size() > 0:
             task = SendQueue().getQueue(0).pop()
