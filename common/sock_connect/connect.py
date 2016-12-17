@@ -42,7 +42,7 @@ class Socket:
     def write(self, data):
         self.sock.send(data)
 
-class Conn(Socket, Handler):
+class Conn(Socket, SocketHandler):
 
 
     def sendbin(self, data):
@@ -63,7 +63,8 @@ class Conn(Socket, Handler):
             except socket.error:
                 self.close()
 
-    # def connect(self,(ip, port)):
+    def get_ip_port(self):
+        return self.ip_port
 
 
     def close(self):
@@ -78,19 +79,22 @@ class ServerConn(Conn):
     def __init__(self, fd, address, backLinkHander):
         self.set_sock(fd)
         self.address = address
+        self.ip_port = address
         self.backLinkHander = backLinkHander
         Epoll().register_with_handler(self)
 
 class ClientConn(Conn):
 
     def __init__(self, ip_port, backLinkHander):
-        self.sock = self.connect(ip_port)
+        self.create_tcpsock()
+        self.connect(ip_port)
+        self.ip_port = ip_port
         self.backLinkHander = backLinkHander
-        Epoll().register_with_handler(self)
+        Epoll().register_with_handler(self, select.EPOLLIN)
 
 
 
-class TcpServer(Handler):
+class TcpServer(SocketHandler):
 
     def __init__(self, config, conn, backLinHandler):
         ip = config.get("tcpserver", "ip")

@@ -19,11 +19,12 @@ class Epoll(Singleton):
 
     def __init__(self):
         if not self.isInit:
-            self.timeout = 0.5
+            self.timeout = 1
             self.fd_map_handler = {}
             self.epoll = select.epoll()
             self.shutdown_request = False
             self.isInit = True
+            self.handlers = []
 
     def server_forever(self):  # 需要主动调用。当此方法运行，epoll服务器正式运行
         try:
@@ -32,7 +33,7 @@ class Epoll(Singleton):
                 for fd, event in events:
                     print fd, event
                     self.handle_request_noblock(fd, event)
-                self.send_msg()
+                self.do_handle()
         finally:
             self.shutdown_request = False
 
@@ -59,25 +60,28 @@ class Epoll(Singleton):
         except IOError:
             print "IOERROR"
 
-    def send_msg(self):
-        while SendQueue().getQueue(0).size() > 0:
-            task = SendQueue().getQueue(0).pop()
-            conn = task.getConn()
-            conn.sendbin(task.getMessage())
+    def add_handler(self, handler):
+        self.handlers.append(handler)
+
+    def do_handle(self):
+        for handler in self.handlers:
+            handler.handle()
+
 
 
 class Handler:  # 需要被继承类，该类相当于一个规则，凡是想注册到epoll里去的类，都必须实现下面两个方法
-
-    def getfd(self):
-        pass
 
     def handle(self, fd, event):
         pass
 
 
+class SocketHandler(Handler):
+
+    def getfd(self):
+        pass
 
 
-class Socket(Handler):
+class Socket(SocketHandler):
 
 
     def create_and_bind(self):

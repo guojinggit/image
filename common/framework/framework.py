@@ -11,12 +11,14 @@ from common.mysql.mysql import *
 from common.thread.threads import *
 from common.appContext.appContext import *
 from common.env.env import *
-
+from common.daemonclient.daemonclient import *
+from common.manager.manager import *
+from common.connectManager.connManager import *
 
 class Framework(Singleton):
 
-    def __init__(self, Config, Epoll, Server, ServerConn, ClientConn, DaemonClient, AppContext, Entry,
-                 BackLinkHander, Threads, Mysql, TaskQueue, SendQueue):
+    def __init__(self, Config, Epoll, Server, ServerConn, ConnManager, AppContext, Entry,
+                 BackLinkHander, Threads, Mysql, Manager):
 
         self.localVal = threading.local()
         Env.setThreadLocal(self.localVal)
@@ -30,9 +32,9 @@ class Framework(Singleton):
         self.backLinkHandler = BackLinkHander()
         self.server = Server(self.config, ServerConn, self.backLinkHandler)
         self.epoll.register_with_handler(self.server)
-        self.ClientConn = ClientConn
-        self.taskQueue = TaskQueue(self.config)
-        self.sendQueue = SendQueue(self.config)
+        self.connManager = ConnManager()
+        self.manager = Manager(self.config)
+        self.epoll.add_handler(self.manager)
         self.threads = Threads(self.config)
         self.threads.start()
 
@@ -43,5 +45,5 @@ class Framework(Singleton):
     def start(self):
         self.epoll.server_forever()
 
-Framework_AN94 = Framework(Config, Epoll, TcpServer, ServerConn, ClientConn, DaemonClinet, AppContext, Entry,
-                           BackLinkHandler, Threads, Mysql, TaskQueue, SendQueue)
+Framework_AN94 = Framework(Config, Epoll, TcpServer, ServerConn, ConnManager, AppContext, Entry,
+                           BackLinkHandler, Threads, Mysql, Manager)

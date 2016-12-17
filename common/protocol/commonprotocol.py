@@ -4,6 +4,14 @@ from common.sock_pack.data_top import *
 class DaemonReq(Data_top):
     uri = 20
 
+    def __init__(self):
+        self.reqtype = ""
+        self.name = ""
+        self.ip = ""
+        self.port = ""
+        self.group = ""
+        self.remark = ""
+
     def get_uri(self):
         return self.uri
 
@@ -34,6 +42,10 @@ class DaemonReq(Data_top):
 
 class DaemonRsp(Data_top):
     uri = 21
+
+    def __init__(self):
+        self.daemon_list = ""
+        self.rsp = ""
 
     def get_uri(self):
         return self.uri

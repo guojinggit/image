@@ -7,7 +7,7 @@ from common.singleton.singleton import *
 class Config():
 
     def init(self):
-        return self.openpath("framework.conf")
+        return self.openpath("common/config/framework.conf")
 
     def read(self, path):
         self.config = ConfigParser.ConfigParser()

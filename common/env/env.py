@@ -1,4 +1,4 @@
-from common.queue.sendQueue import SendQueue
+# coding=utf-8
 
 
 class Env:

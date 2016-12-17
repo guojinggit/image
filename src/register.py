@@ -23,6 +23,9 @@ class Register():
 
         self.show()
 
+    def on_register_msg_rsp(self, msg, conn):
+        print "msg from aliyun:", msg.rsp
+
     def register(self, dmsg, conn):
         if self.find_srvname(dmsg.name):
             is_repeat = False
@@ -34,13 +37,12 @@ class Register():
                 self.insert_register_msg(dmsg)
         else:
             self.add_daemon_reg_edit(dmsg)
-        task = TaskBase()
-        task.setConn(conn)
         msg = DaemonRsp()
-        msg.init("success", "")
-        pk = Pack(msg)
-        task.setMessage(pk.get_data())
-        SendQueue().getQueue(0).push(task)
+        msg.rsp = "success"
+        SendQueue().dispatchById(msg, conn)
+        msg = DaemonReq()
+        msg.reqtype = "getlist"
+        SendQueue().dispatchByIp(msg, ("120.26.164.219", 8444))
 
     def unregister(self, dmsg, conn):
         if self.find_srvname(dmsg.name):

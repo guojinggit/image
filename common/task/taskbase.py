@@ -1,4 +1,7 @@
+# coding=utf-8
 
+
+from common.env.env import *
 
 class TaskBase():
 
@@ -28,3 +31,21 @@ class TaskBase():
 
     def getConn(self):
         return self.conn
+
+
+class SendMsgTask(TaskBase):
+
+    def set_ip_port(self, ip_port):
+        self.ip_port = ip_port
+
+    def sendmsg(self):
+        if self.sendtype == "sendById":
+            self.conn.sendbin(self.getMessage())
+        elif self.sendtype == "sendByIp":
+            self.conn = Env.framework.connManager.getConn(self.ip_port)
+            self.conn.sendbin(self.getMessage())
+
+
+
+
+
