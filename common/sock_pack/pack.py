@@ -18,6 +18,7 @@ class Pack(header.Header):
         """必须主动调用的方法，顺便将自己的对象传过去"""
         data_class.pack_me(self)
         self.set_body_length(len(self.body))
+        self.set_uri(data_class.get_uri())
 
     def pack(self, data):
         """打包动作，在数据类内部调用"""
@@ -58,7 +59,6 @@ class Unpack():
     # 表示数据长度的字节数
     num_data_length = 8
     pos = 22
-
 
     def load(self, data_class):
         data_class.unpack_me(self)

@@ -1,5 +1,5 @@
 
-import common.sock_pack.data_top_super_class as data_top
+import common.sock_pack.data_top as data_top
 import log
 import common.sock_pack.pack as pack
 

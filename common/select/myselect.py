@@ -1,5 +1,5 @@
 import socket
-import select
+import myselect
 import sys
 import os
 import errno
@@ -15,7 +15,7 @@ def _eintr_retry(func, *args):
     while True:
         try:
             return func(*args)
-        except (OSError, select.error) as e:
+        except (OSError, myselect.error) as e:
             if e.args[0] != errno.EINTR:
                 raise
 
@@ -95,7 +95,7 @@ class BaseServer:
                 # connecting to the socket to wake this up instead of
                 # polling. Polling reduces our responsiveness to a
                 # shutdown request and wastes cpu at all other times.
-                r, w, e = _eintr_retry(select.select, [self], [], [],
+                r, w, e = _eintr_retry(myselect.myselect, [self], [], [],
                                        poll_interval)
                 if self in r:
                     self._handle_request_noblock()
